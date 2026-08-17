@@ -2,24 +2,37 @@
 
 > AstrBot 渠道元数据注入插件
 
-在每次 LLM 上行请求体顶层自动注入渠道标识信息，用于区分消息来源（微信、QQ、Telegram 等），便于 downstream 服务进行统计分析与路由。
+在每次 LLM 请求时，自动将渠道标识信息（平台、发送者、群聊等）注入到用户消息中，便于下游服务（AgentX / OpenAI 兼容接口）进行统计分析与路由。
 
 ## 功能
 
-利用 `on_llm_request` 钩子，在 AstrBot 调用 LLM 前，将以下渠道元数据写入 `ProviderRequest.extra_params`：
+利用 `on_llm_request` 钩子，在 AstrBot 调用 LLM 前，将以下渠道元数据以 `<channel_meta>` 标签的形式注入到用户消息内容中：
 
 | 字段 | 说明 | 示例值 |
 |---|---|---|
-| `ast_platform` | 平台适配器名称 | `aiocqhttp`、`telegram`、`discord` |
-| `ast_sender_id` | 发送者 ID | 用户 QQ 号、Telegram user id 等 |
-| `ast_unified_msg_origin` | 统一消息来源标识 | 群 ID / 私聊标识 |
-| `ast_is_group` | 是否为群聊 | `True` / `False` |
+| `platform` | 平台适配器名称 | `aiocqhttp`、`telegram`、`discord` |
+| `sender_id` | 发送者 ID | 用户 QQ 号、Telegram user id 等 |
+| `is_group` | 是否为群聊 | `True` / `False` |
+| `unified_msg_origin` | 统一消息来源标识 | 群 ID / 私聊标识 |
 
-这些字段会随请求透传给 AgentX / OpenAI 兼容接口，可在后端直接读取用于：
+注入后，下游服务收到的 user message 中会包含如下内容：
+
+```xml
+<channel_meta>
+platform: aiocqhttp
+sender_id: 123456
+is_group: True
+unified_msg_origin: group:123456
+</channel_meta>
+```
+
+可在后端解析该标签用于：
 
 - 按渠道统计 LLM 调用量
 - 区分私聊 / 群聊场景
 - 基于来源做请求路由或审计
+
+> **注意**：注入的内容通过 `mark_as_temp()` 标记为临时消息，**不会持久化到对话历史**中。
 
 ## 支持平台
 
@@ -47,9 +60,12 @@ aiocqhttp · qq_official · telegram · discord · slack · kook · satori · mi
                             ↓
                    on_llm_request 钩子触发
                             ↓
-               本插件注入 ast_* 字段到 extra_params
+          本插件注入 <channel_meta> 到 extra_user_content_parts
+          （标记为临时，不写入对话历史）
                             ↓
                  LLM Provider（OpenAI 兼容接口）
+                            ↓
+              下游服务从 user message 中解析渠道元数据
 ```
 
 ## License

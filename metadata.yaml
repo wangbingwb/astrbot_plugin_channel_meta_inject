@@ -1,7 +1,7 @@
 name: astrbot_plugin_channel_meta_inject
 display_name: 渠道元数据注入
-short_desc: 在LLM上行请求体顶层注入渠道标识ast_platform，区分微信/QQ等，用于统计分析。
-desc: 在LLM上行请求体顶层注入渠道标识ast_platform，区分微信/QQ等，用于统计分析。
+short_desc: 在LLM请求的用户消息中注入渠道标识<channel_meta>，区分微信/QQ等，用于统计分析。
+desc: 在LLM请求的用户消息中注入渠道标识<channel_meta>（平台、发送者、群聊等），区分微信/QQ等，用于统计分析。注入内容标记为临时，不写入对话历史。
 author: wangbing
 version: 0.1.0
 repo: https://github.com/wangbingwb/astrbot_plugin_channel_meta_inject
