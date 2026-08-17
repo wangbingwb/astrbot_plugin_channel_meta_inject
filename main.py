@@ -21,7 +21,12 @@ class ChannelMetaInjectPlugin(Star):
     ):
         plat = event.get_platform_name()
         sender_id = event.get_sender_id()
-        is_group = event.is_group()
+        # 兼容不同平台适配器：优先 is_group()，回退到 get_group() 判断
+        if hasattr(event, 'is_group'):
+            is_group = event.is_group()
+        else:
+            group = event.get_group()
+            is_group = bool(group and group.get('group_id'))
 
         # 将渠道元数据注入为临时用户内容附加部分（不污染对话历史）
         meta_text = (
