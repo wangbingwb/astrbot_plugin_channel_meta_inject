@@ -25,16 +25,16 @@ class ChannelMetaInjectPlugin(Star):
         if hasattr(event, 'is_group'):
             is_group = event.is_group()
         else:
-            group = event.get_group()
+            group = await event.get_group()
             is_group = bool(group and group.get('group_id'))
 
         # 将渠道元数据注入为临时用户内容附加部分（不污染对话历史）
         meta_text = (
-            f"<channel_meta>\n"
-            f"platform: {plat}\n"
-            f"sender_id: {sender_id}\n"
-            f"is_group: {is_group}\n"
-            f"unified_msg_origin: {event.unified_msg_origin}\n"
+            f"<channel_meta>"
+            f"platform:{plat},"
+            f"sender_id:{sender_id},"
+            f"is_group:{is_group},"
+            f"unified_msg_origin:{event.unified_msg_origin}"
             f"</channel_meta>"
         )
         part = TextPart(text=meta_text)
