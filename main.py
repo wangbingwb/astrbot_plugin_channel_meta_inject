@@ -1,3 +1,4 @@
+from astrbot import logger
 from astrbot.api.event import filter, AstrMessageEvent
 from astrbot.api.star import Context, Star, register
 from astrbot.api.provider import ProviderRequest
@@ -34,3 +35,4 @@ class ChannelMetaInjectPlugin(Star):
         part = TextPart(text=meta_text)
         part.mark_as_temp()  # 标记为临时，不持久化到历史记录
         req.extra_user_content_parts.append(part)
+        logger.info(f"[ChannelMetaInject] 已注入渠道元数据: platform={plat}, sender_id={sender_id}, is_group={is_group}")
