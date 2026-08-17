@@ -1,0 +1,22 @@
+name: astrbot_plugin_channel_meta_inject
+display_name: 渠道元数据注入
+short_desc: 在LLM上行请求体顶层注入渠道标识ast_platform，区分微信/QQ等，用于统计分析。
+desc: 在LLM上行请求体顶层注入渠道标识ast_platform，区分微信/QQ等，用于统计分析。
+author: wangbing
+version: 0.1.0
+repo: https://github.com/wangbingwb/astrbot_plugin_channel_meta_inject
+support_platforms:
+  - aiocqhttp
+  - qq_official
+  - telegram
+  - discord
+  - slack
+  - kook
+  - satori
+  - misskey
+  - line
+  - lark
+  - dingtalk
+  - wecom
+  - weixin_official_account
+astrbot_version: ">=4.16,<5"

@@ -1,0 +1,8 @@
+{
+  "name": "渠道元数据注入",
+  "desc": "在LLM上行请求体顶层注入渠道标识ast_platform，区分微信/QQ等，用于统计分析",
+  "version": "1.0.0",
+  "author": "wangbing",
+  "repo": "",
+  "requirements": []
+}
