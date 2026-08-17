@@ -1,25 +1,29 @@
-from astrbot.api import AstrBotPlugin
-from astrbot.api.event import AstrMessageEvent
-from astrbot.api.llm import LLMRequest
+from astrbot.api.event import filter, AstrMessageEvent
+from astrbot.api.star import Context, Star, register
+from astrbot.api.provider import ProviderRequest
 
-plugin = AstrBotPlugin(
+
+@register(
     "astrbot_plugin_channel_meta_inject",
+    "wangbing",
     "渠道元数据注入",
     "1.0.0",
-    "custom"
 )
+class ChannelMetaInjectPlugin(Star):
+    def __init__(self, context: Context):
+        super().__init__(context)
 
-@plugin.on_llm_request
-async def inject_meta(event: AstrMessageEvent, llm_req: LLMRequest):
-    plat = event.get_platform_name()
-    umo = event.unified_msg_origin
-    sender_id = event.get_sender_id()
-    is_group = event.is_group()
+    @filter.on_llm_request()
+    async def inject_meta(
+        self, event: AstrMessageEvent, req: ProviderRequest
+    ):
+        plat = event.get_platform_name()
+        umo = event.unified_msg_origin
+        sender_id = event.get_sender_id()
+        is_group = event.is_group()
 
-    # 注入到请求顶层extra_params（透传给agentx/openai兼容接口）
-    llm_req.extra_params["ast_platform"] = plat
-    llm_req.extra_params["ast_sender_id"] = sender_id
-    llm_req.extra_params["ast_unified_msg_origin"] = umo
-    llm_req.extra_params["ast_is_group"] = is_group
-
-plugin.register()
+        # 注入到请求顶层 extra_params（透传给 agentx/openai 兼容接口）
+        req.extra_params["ast_platform"] = plat
+        req.extra_params["ast_sender_id"] = sender_id
+        req.extra_params["ast_unified_msg_origin"] = umo
+        req.extra_params["ast_is_group"] = is_group
